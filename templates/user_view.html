@@ -1,0 +1,12 @@
+{% extends 'base.html' %}{% block title %}User Details{% endblock %}
+{% block content %}
+<p class="bc"><a href="{{ url_for('admin_dashboard') }}">Dashboard</a> › <a href="{{ url_for('users') }}">Registered Users</a> › #{{ u.uid }}</p>
+<div class="card mb"><h2>{{ ((u.first_name or '') ~ ' ' ~ (u.last_name or ''))|trim or u.email }}</h2>
+<div class="kv mt"><b>Email</b><span>{{ u.email }}</span><b>Phone</b><span>{{ u.phone or '—' }}</span><b>Registered</b><span>{{ u.created_at.strftime('%d %b %Y') if u.created_at else '—' }}</span></div></div>
+<h2>Resumes</h2><div class="tbl-wrap mb"><table><thead><tr><th>ID</th><th>File</th><th>Skills</th><th>Uploaded</th></tr></thead><tbody>
+{% for r in resumes %}<tr><td>{{ r.rid }}</td><td>{{ r.file }}</td><td>{{ r.skills or '—' }}</td><td>{{ r.upload_date }}</td></tr>{% else %}<tr><td colspan="4" class="muted">No resumes.</td></tr>{% endfor %}</tbody></table></div>
+<h2>Top job matches</h2><div class="tbl-wrap mb"><table><thead><tr><th>Job</th><th>Company</th><th>Score</th></tr></thead><tbody>
+{% for m in matches %}<tr><td>{{ m.title }}</td><td>{{ m.company_name }}</td><td>{{ m.score|round(2) }}%</td></tr>{% else %}<tr><td colspan="3" class="muted">No matches.</td></tr>{% endfor %}</tbody></table></div>
+<h2>Feedback</h2><div class="tbl-wrap"><table><thead><tr><th>Rating</th><th>Category</th><th>Comment</th><th>Job status</th></tr></thead><tbody>
+{% for f in fbs %}<tr><td>{{ '⭐' * (f.rating or 0) }}</td><td>{{ f.category }}</td><td>{{ f.comment }}</td><td>{{ f.placed_status }}</td></tr>{% else %}<tr><td colspan="4" class="muted">No feedback.</td></tr>{% endfor %}</tbody></table></div>
+{% endblock %}

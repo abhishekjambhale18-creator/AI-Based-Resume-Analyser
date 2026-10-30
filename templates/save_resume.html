@@ -1,0 +1,46 @@
+{% extends 'base.html' %}{% block title %}Analysis Results{% endblock %}
+{% block content %}
+<div class="card mb"><span class="muted">🎯 DETECTED SKILLS</span>
+  <div class="chips">{% for s in skills %}<span class="chip">{{ s }}</span>{% else %}<span class="muted">No known skills detected in this resume.</span>{% endfor %}</div></div>
+
+{% if best %}
+<div class="card mb">
+  <span class="badge b-amber">🏆 BEST MATCH</span>
+  <h2 style="font-size:1.6rem;margin-top:12px">{{ best.title }}</h2><p class="muted">🏢 {{ best.company }}</p>
+  {% set cls = 'b-green' if best.score >= 70 else ('b-amber' if best.score >= 40 else 'b-red') %}
+  <p class="mt"><span class="badge {{ cls }}">⚡ {{ best.score }}% — {{ match_label(best.score) }}</span></p>
+  <div class="donut-wrap"><canvas id="donut"></canvas></div>
+  <div class="two">
+    <div class="box"><h4>✅ MATCHED SKILLS</h4><ul>{% for s in best.matched %}<li>• {{ s }}</li>{% else %}<li class="muted">None yet</li>{% endfor %}</ul></div>
+    <div class="box"><h4>⚠ SKILLS TO LEARN</h4><ul>{% for s in best.missing %}<li>• {{ s }}</li>{% else %}<li class="muted">All covered!</li>{% endfor %}</ul></div>
+  </div>
+</div>
+
+<div class="card mb"><h2>All job matches</h2><p class="muted mb">Ranked from highest to lowest cosine-similarity score</p>
+<div class="tbl-wrap"><table><thead><tr><th>Rank</th><th>Job</th><th>Company</th><th>Match</th><th>Missing skills</th></tr></thead><tbody>
+{% for r in results %}{% set c = 'b-green' if r.score >= 70 else ('b-amber' if r.score >= 40 else 'b-red') %}
+<tr><td>{{ loop.index }}</td><td><b>{{ r.title }}</b></td><td>{{ r.company }}</td>
+<td><span class="badge {{ c }}">{{ r.score }}%</span></td><td class="muted">{{ r.missing|join(', ') or '—' }}</td></tr>{% endfor %}
+</tbody></table></div></div>
+
+<form class="card" method="post" action="{{ url_for('submit_feedback') }}">
+  <h2>💬 Your Feedback</h2><p class="muted">Help us improve — your opinion matters to us</p>
+  <input type="hidden" name="mid" value="{{ best.mid }}"><input type="hidden" name="rating" id="rating" value="5">
+  <div class="stars" id="stars"><span>⭐</span><span>⭐</span><span>⭐</span><span>⭐</span><span>⭐</span></div>
+  <p class="muted center mb" id="ratingText"></p>
+  <label>Experience category</label>
+  <select name="category"><option>Job Matching Quality</option><option>Skill Detection</option><option>User Interface</option><option>Speed &amp; Performance</option><option>Other</option></select>
+  <div class="two"><div><label>Job status</label><select name="placed_status"><option>Searching</option><option>Placed</option></select></div>
+  <div><label>Will you continue using this platform?</label><select name="continue_status"><option value="Continuing">Yes, continuing</option><option value="Left">No, leaving</option></select></div></div>
+  <label>Your feedback</label><textarea name="comment" rows="3" required placeholder="Tell us what you think…"></textarea>
+  <button class="btn block" type="submit">🚀 Submit Feedback</button>
+</form>
+{% endif %}
+{% endblock %}
+{% block scripts %}{% if best %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+new Chart(document.getElementById('donut'),{type:'doughnut',
+ data:{labels:['Matched','Gap'],datasets:[{data:[{{ best.score }},{{ (100 - best.score)|round(2) }}],backgroundColor:['#34d399','#2b3160'],borderWidth:0}]},
+ options:{cutout:'70%',plugins:{legend:{position:'bottom',labels:{color:'#8d93bd'}}}}});
+</script>{% endif %}{% endblock %}

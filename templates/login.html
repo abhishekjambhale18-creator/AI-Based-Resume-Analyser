@@ -1,0 +1,12 @@
+{% extends 'base.html' %}{% block title %}User Login{% endblock %}
+{% block content %}
+<div class="hero"><h1>💬 AI-Based <span>Resume Analyzer</span></h1><p>Smart Job Matching Using Artificial Intelligence</p></div>
+<form class="card narrow" method="post">
+  <h2 class="center mb">User Login</h2>
+  <input type="email" name="email" placeholder="✉ Enter Email" required autofocus>
+  <input type="password" name="password" placeholder="🔒 Enter Password" required>
+  <button class="btn block" type="submit">Login</button>
+  <p class="muted center mt">Don't have an account? <a href="{{ url_for('register') }}">Register</a></p>
+  <p class="muted center" style="margin-top:8px"><a href="{{ url_for('admin_login') }}">Admin login</a></p>
+</form>
+{% endblock %}

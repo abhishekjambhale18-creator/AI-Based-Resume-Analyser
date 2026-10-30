@@ -1,0 +1,20 @@
+{% extends 'base.html' %}{% block title %}Admin Dashboard{% endblock %}
+{% block content %}
+<div class="banner"><div><small>ADMINISTRATION PANEL</small><h2 style="font-size:1.5rem;margin:4px 0">AI Resume Analyzer</h2><small>Monitor users, jobs, feedback and platform analytics from one place.</small></div>
+<div class="nums"><div><b>{{ users }}</b><small>Users</small></div><div><b>{{ jobs }}</b><small>Jobs</small></div><div><b>{{ resumes }}</b><small>Resumes</small></div></div></div>
+<div class="grid g4 mt">
+  <div class="stat"><span>👥</span><b>{{ users }}</b><span>Registered Users</span></div>
+  <div class="stat c2"><span>💼</span><b>{{ jobs }}</b><span>Active Job Listings</span></div>
+  <div class="stat c3"><span>📄</span><b>{{ resumes }}</b><span>Resumes Uploaded</span></div>
+  <div class="stat c4"><span>💬</span><b>{{ feedback }}</b><span>Feedback Received</span></div>
+</div>
+<p class="muted mt">QUICK ACCESS</p>
+<div class="grid g4" style="margin-top:10px">
+  <a class="quick" href="{{ url_for('users') }}">👥<h3>View Users</h3><p>Browse all registered users and manage their accounts.</p></a>
+  <a class="quick" href="{{ url_for('jobs') }}">💼<h3>Manage Jobs</h3><p>Add, view and manage job listings and skill requirements.</p></a>
+  <a class="quick" href="{{ url_for('admin_feedback') }}">💬<h3>View Feedback</h3><p>Review ratings and comments submitted by users.</p></a>
+  <a class="quick" href="{{ url_for('summary_report') }}">📊<h3>Summary Report</h3><p>Full analytics — placements, top skills, user activity and trends.</p></a>
+  <a class="quick" href="{{ url_for('date_report') }}">📅<h3>Date-wise Report</h3><p>Filter users, resumes, matches and feedback by date range.</p></a>
+  <a class="quick" href="{{ url_for('run_migration') }}">🛠<h3>Schema Check</h3><p>Verify that all database columns exist.</p></a>
+</div>
+{% endblock %}

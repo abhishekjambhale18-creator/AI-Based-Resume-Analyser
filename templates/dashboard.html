@@ -1,0 +1,22 @@
+{% extends 'base.html' %}{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="hero"><span class="pill">✨ AI-POWERED PLATFORM</span>
+  <h1>💬 AI-Based <span>Resume Analyzer</span></h1><p>Smart Job Matching Using Artificial Intelligence</p></div>
+<div class="card narrow center" style="max-width:420px">
+  <div style="font-size:2.4rem">📄</div><h2 class="mt">Upload Resume</h2>
+  <p class="muted mb">Analyze your resume and find the best matching job.</p>
+  <a class="btn" href="{{ url_for('upload_resume') }}">⬆ Upload Resume</a>
+</div>
+<div class="grid g4 mt" style="max-width:520px;margin:22px auto 0;grid-template-columns:repeat(3,1fr)">
+  <div class="stat center"><b class="grad">AI</b><span>POWERED</span></div>
+  <div class="stat center c2"><b class="grad">TF-IDF</b><span>MATCHING</span></div>
+  <div class="stat center c3"><b class="grad">PDF</b><span>SUPPORT</span></div>
+</div>
+{% if resumes %}
+<h2 class="mt">Your uploaded resumes</h2>
+<div class="tbl-wrap"><table><thead><tr><th>#</th><th>File</th><th>Skills</th><th>Uploaded</th><th></th></tr></thead><tbody>
+{% for r in resumes %}<tr><td><span class="idbox">{{ r.rid }}</span></td><td>{{ r.file.split('_',2)[-1] }}</td><td>{{ r.n_skills }}</td><td>{{ r.upload_date.strftime('%d %b %Y') }}</td>
+<td><a class="btn sm ghost" href="{{ url_for('save_resume', rid=r.rid) }}">View analysis</a></td></tr>{% endfor %}
+</tbody></table></div>
+{% endif %}
+{% endblock %}

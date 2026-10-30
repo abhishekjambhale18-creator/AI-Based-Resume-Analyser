@@ -1,0 +1,53 @@
+{% extends 'base.html' %}{% block title %}Summary Report{% endblock %}{% block mainclass %}wide{% endblock %}
+{% block content %}
+<div class="toolbar"><a class="btn sm green" href="{{ url_for('date_report') }}">📅 Date Report</a><button class="btn sm ghost" onclick="window.print()">🖨 Print Report</button></div>
+<h1 style="font-size:1.8rem">📊 Summary Report</h1><p class="muted mb">Complete overview of users, placements, skills, job matches and feedback across the platform.</p>
+<div class="grid g5">
+  <div class="stat"><span>👥</span><b>{{ total }}</b><span>Total Registered Users</span></div>
+  <div class="stat c2"><span>🎉</span><b>{{ placed }}</b><span>Users Placed in Jobs</span></div>
+  <div class="stat c3"><span>📄</span><b>{{ resumes }}</b><span>Resumes Analyzed</span></div>
+  <div class="stat c4"><span>💼</span><b>{{ jobs_n }}</b><span>Active Job Listings</span></div>
+  <div class="stat c5"><span>💬</span><b>{{ fb_n }}</b><span>Feedback Submissions</span></div>
+</div>
+<div class="grid g2 mt">
+  <div class="card"><h2>🎯 Placement Overview</h2><p class="muted">How many users have been placed in a job role</p>
+    <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin-top:14px"><div style="width:170px"><canvas id="placeChart"></canvas></div>
+    <div><p><span style="color:#10b981">■</span> {{ placed }} Placed</p><p><span style="color:#f59e0b">■</span> {{ searching }} Still searching</p><p><span style="color:#9ca3af">■</span> {{ noresp }} No response yet</p><hr style="border-color:var(--line);margin:10px 0"><p><span style="color:#6c63ff">■</span> {{ placement_rate }}% Placement rate</p></div></div></div>
+  <div class="card"><h2>🔄 User Retention</h2><p class="muted">Users who chose to continue vs those who left the platform</p><canvas id="retChart" height="150"></canvas></div>
+</div>
+
+<h2 class="mt">🏆 Top Skills Detected Across All Resumes</h2><p class="muted mb">Most frequently found skills — higher count means more candidates possess this skill</p>
+<div class="grid g2"><div class="card">
+{% for s in top_skills %}<div class="skillrow"><span class="idbox">{{ loop.index }}</span><b>{{ s.skill|title }}</b><div class="bar"><i style="width:{{ (s.freq / max_skill * 100)|round }}%"></i></div><span>{{ s.freq }}</span></div>
+{% else %}<p class="muted">No skills extracted yet.</p>{% endfor %}</div>
+<div class="card"><canvas id="skillChart"></canvas></div></div>
+
+<h2 class="mt">🎯 Job Match Distribution</h2>
+<div class="grid g2 mb"><div class="card"><canvas id="distChart" height="200"></canvas></div>
+<div class="tbl-wrap"><table><thead><tr><th>Job Title</th><th>Company</th><th>Applicants</th><th>Avg Match</th></tr></thead><tbody>
+{% for j in job_rows %}{% set c = 'b-green' if j.avg_score >= 70 else ('b-amber' if j.avg_score >= 40 else 'b-red') %}
+<tr><td><b>{{ j.title }}</b></td><td>{{ j.company_name }}</td><td>{{ j.applicants }}</td><td><span class="badge {{ c }}">{{ j.avg_score|round }}%</span></td></tr>{% endfor %}</tbody></table></div></div>
+
+<h2>⭐ Feedback &amp; Ratings</h2><p class="muted mb">User satisfaction scores and recent feedback submissions</p>
+<div class="grid g2"><div class="card"><div style="display:flex;gap:20px;align-items:center"><div class="center"><div class="bigrate">{{ avg_rating }}</div><span class="muted">out of 5 · {{ fb_n }} reviews</span></div>
+<div style="flex:1">{% for n in [5,4,3,2,1] %}<div class="ratebar"><span>{{ n }}</span><div class="bar"><i style="width:{{ (ratings[n-1] / fb_n * 100)|round if fb_n else 0 }}%;background:#f59e0b"></i></div><span>{{ (ratings[n-1] / fb_n * 100)|round if fb_n else 0 }}%</span></div>{% endfor %}</div></div>
+<canvas id="rateChart" height="130" class="mt"></canvas></div>
+<div class="card" style="max-height:360px;overflow:auto">{% for f in recent_fb %}<div class="fbitem"><b>{{ f.email }}</b> <span style="float:right">{{ '⭐' * (f.rating or 0) }}</span><br><span style="color:#555">{{ f.comment }}</span></div>{% else %}<p class="muted">No feedback yet.</p>{% endfor %}</div></div>
+
+<h2 class="mt">📋 Recent User Activity</h2><p class="muted mb">Latest registered users — updates live whenever a user registers, uploads a resume or submits feedback</p>
+<div class="tbl-wrap"><table><thead><tr><th>User</th><th>Resumes</th><th>Feedback</th><th>Platform Status</th><th>Job Status</th><th>Action</th></tr></thead><tbody>
+{% for a in activity %}<tr><td><b>{{ ((a.first_name or '') ~ ' ' ~ (a.last_name or ''))|trim or '—' }}</b><br><span class="muted">{{ a.email }}</span></td><td>{{ a.resumes }}</td><td>{{ a.feedback }}</td>
+<td>{% if a.cont == 'Continuing' %}<span class="badge b-green">● Continuing</span>{% elif a.cont == 'Left' %}<span class="badge b-amber">● Left Platform</span>{% else %}<span class="badge b-gray">● Unknown</span>{% endif %}</td>
+<td>{% if a.placed == 'Placed' %}<span class="badge b-green">✓ Placed</span>{% elif a.placed == 'Searching' %}<span class="badge b-amber">🔍 Searching</span>{% else %}<span class="badge b-gray">Pending</span>{% endif %}</td>
+<td><a class="btn sm ghost" href="{{ url_for('user_view', uid=a.uid) }}">View</a></td></tr>{% endfor %}</tbody></table></div>
+{% endblock %}
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+Chart.defaults.color='#8d93bd';
+new Chart(placeChart,{type:'doughnut',data:{datasets:[{data:[{{ placed }},{{ searching }},{{ noresp }}],backgroundColor:['#10b981','#f59e0b','#e5e7eb'],borderWidth:0}]},options:{cutout:'65%',plugins:{legend:{display:false}}}});
+new Chart(retChart,{type:'bar',data:{labels:['Continuing','Left Platform','No Feedback'],datasets:[{data:[{{ cont }},{{ left }},{{ nofb }}],backgroundColor:['#10b981','#f43f5e','#e5e7eb']}]},options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{precision:0}}}}});
+new Chart(skillChart,{type:'bar',data:{labels:{{ top_skills|map(attribute='skill')|map('title')|list|tojson }},datasets:[{data:{{ top_skills|map(attribute='freq')|list|tojson }},backgroundColor:'#6c63ff',borderRadius:6}]},options:{indexAxis:'y',plugins:{legend:{display:false}}}});
+new Chart(distChart,{type:'pie',data:{labels:['High Match (≥70%)','Medium Match (40–69%)','Low Match (<40%)'],datasets:[{data:{{ dist|tojson }},backgroundColor:['#10b981','#f59e0b','#f43f5e'],borderWidth:0}]},options:{plugins:{legend:{position:'bottom'}}}});
+new Chart(rateChart,{type:'bar',data:{labels:['1★','2★','3★','4★','5★'],datasets:[{data:{{ ratings|tojson }},backgroundColor:['#f43f5e','#f59e0b','#f59e0b','#10b981','#10b981']}]},options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{precision:0}}}}});
+</script>{% endblock %}

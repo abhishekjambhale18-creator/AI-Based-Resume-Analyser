@@ -1,0 +1,7 @@
+{% extends 'base.html' %}{% block title %}User Feedback{% endblock %}
+{% block content %}
+<p class="bc"><a href="{{ url_for('admin_dashboard') }}">Dashboard</a> › User Feedback</p>
+<div class="tbl-wrap"><table><thead><tr><th>Feedback ID</th><th>User Email</th><th>Rating</th><th>Comment</th></tr></thead><tbody>
+{% for f in rows %}<tr><td><span class="idbox">{{ f.fid }}</span></td><td>{{ f.email }}</td><td>{{ '⭐' * (f.rating or 0) }}</td><td>{{ f.comment }}</td></tr>
+{% else %}<tr><td colspan="4" class="muted center">No feedback yet.</td></tr>{% endfor %}</tbody></table></div>
+{% endblock %}

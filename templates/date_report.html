@@ -1,0 +1,25 @@
+{% extends 'base.html' %}{% block title %}Date-wise Report{% endblock %}{% block mainclass %}wide{% endblock %}
+{% block content %}
+<div class="toolbar"><button class="btn sm ghost" onclick="window.print()">🖨 Print Report</button></div>
+<p class="bc"><a href="{{ url_for('admin_dashboard') }}">Dashboard</a> › Date-wise Report</p>
+<p class="muted">ANALYTICS &amp; REPORTING</p><h1 style="font-size:1.8rem">📅 Date-wise Report</h1><p class="muted mb">Filter users, resumes, matches and feedback by date range. View institute-style tabular reports.</p>
+<form class="card mb" method="get"><h2>📅 Report Generation Date</h2>
+<div class="filters mt"><div><label>From</label><input type="date" name="from" value="{{ frm }}"></div><div><label>To</label><input type="date" name="to" value="{{ to }}"></div>
+<div><label>Report type</label><select name="type">{% for k, v in types.items() %}<option value="{{ k }}" {{ 'selected' if k == rtype }}>{{ v }}</option>{% endfor %}</select></div>
+<button class="btn">Apply Filter →</button><a class="btn ghost" href="{{ url_for('date_report') }}">✕ Reset</a></div>
+<p class="muted mt">Showing: {{ frm }} → {{ to }} · {{ rows|length }} records found</p></form>
+
+<div class="card mb no-print"><h2>📈 Summary Reports</h2><p class="muted mb">View aggregated activity data by day, month, or year — independent of the date filter above.</p>
+<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr))">
+<a class="quick" href="?summary=daily"><b>Daily Summary</b><p>Activity breakdown per day</p></a><a class="quick" href="?summary=monthly"><b>Monthly Summary</b><p>Trends grouped by month</p></a><a class="quick" href="?summary=yearly"><b>Yearly Summary</b><p>Annual performance overview</p></a></div></div>
+
+{% if summary_rows is not none %}<div class="card mb"><h2>{{ summary|title }} Summary</h2>
+<div class="tbl-wrap mt"><table><thead><tr><th>Period</th><th>Registrations</th><th>Resumes</th><th>Feedback</th></tr></thead><tbody>
+{% for r in summary_rows %}<tr><td><b>{{ r.period }}</b></td><td>{{ r.users }}</td><td>{{ r.resumes }}</td><td>{{ r.feedback }}</td></tr>{% else %}<tr><td colspan="4" class="muted">No data.</td></tr>{% endfor %}</tbody></table></div></div>{% endif %}
+
+<div class="card"><h2>{{ types[rtype] }} Report <span class="badge b-gray" style="float:right">{{ rows|length }} records</span></h2>
+<div class="tbl-wrap mt"><table><thead><tr><th>#</th>{% for c in cols %}<th>{{ c[1] }}</th>{% endfor %}</tr></thead><tbody>
+{% for r in rows %}<tr><td><span class="idbox">{{ loop.index }}</span></td>{% for c in cols %}<td>{% set v = r[c[0]] %}{{ '—' if v is none or v == '' else v }}</td>{% endfor %}</tr>
+{% else %}<tr><td colspan="{{ cols|length + 1 }}" class="muted center">No records in this date range.</td></tr>{% endfor %}</tbody></table></div>
+<p class="muted mt">Generated on {{ today }}</p></div>
+{% endblock %}

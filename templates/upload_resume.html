@@ -1,0 +1,13 @@
+{% extends 'base.html' %}{% block title %}Upload Resume{% endblock %}
+{% block content %}
+<div class="hero"><span class="pill">— STEP 1 —</span><h1 style="font-size:1.9rem">Upload Your <span>Resume</span></h1><p>We'll extract your skills and match you to the best jobs</p></div>
+<form id="uploadForm" class="card narrow center" style="max-width:480px" method="post" enctype="multipart/form-data">
+  <h2>Resume Upload</h2><p class="muted">Supports PDF and DOCX formats — max 5 MB per file</p>
+  <div class="chips" style="justify-content:center"><span class="chip">PDF</span><span class="chip">DOCX</span><span class="chip r">Max 5 MB</span></div>
+  <div id="dropzone" class="dropzone"><div class="ico">📥</div>
+    <p style="margin-top:8px">Drag &amp; drop your resume here, or <b class="grad">browse files</b></p>
+    <p class="muted" id="fileLabel">No file chosen</p></div>
+  <input type="file" id="resumeFile" name="resume" accept=".pdf,.docx" hidden>
+  <button id="uploadBtn" class="btn block" type="submit" disabled>⬆ Upload &amp; Analyze Resume</button>
+</form>
+{% endblock %}

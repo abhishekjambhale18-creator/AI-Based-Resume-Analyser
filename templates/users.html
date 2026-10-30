@@ -1,0 +1,15 @@
+{% extends 'base.html' %}{% block title %}Registered Users{% endblock %}
+{% block content %}
+<p class="bc"><a href="{{ url_for('admin_dashboard') }}">Dashboard</a> › Registered Users</p>
+<h1 style="font-size:1.8rem">👥 Registered Users</h1>
+<div class="grid g4 mt"><div class="stat"><b>{{ counts.total }}</b><span>Total Users</span></div><div class="stat c2"><b>{{ counts.cont }}</b><span>Continuing Users</span></div>
+<div class="stat c3"><b>{{ counts.left }}</b><span>No Longer Active</span></div><div class="stat c4"><b>{{ counts.nofb }}</b><span>No Feedback Yet</span></div></div>
+<input id="tableSearch" class="mt" placeholder="🔍 Search by name, email or status…">
+<div class="tbl-wrap"><table id="searchTable"><thead><tr><th>ID</th><th>Full Name</th><th>Email</th><th>Phone</th><th>Platform Status</th><th>Actions</th></tr></thead><tbody>
+{% for r in rows %}<tr><td><span class="idbox">{{ r.uid }}</span></td><td><b>{{ ((r.first_name or '') ~ ' ' ~ (r.last_name or ''))|trim or '—' }}</b></td><td>{{ r.email }}</td><td>{{ r.phone or '—' }}</td>
+<td>{% if r.status == 'Continuing' %}<span class="badge b-green">● Continuing</span>{% elif r.status == 'Unknown' %}<span class="badge b-gray">● Unknown</span>{% else %}<span class="badge b-amber">● No longer active</span>{% endif %}</td>
+<td style="white-space:nowrap"><a class="btn sm ghost" href="{{ url_for('user_view', uid=r.uid) }}">👁 View</a>
+<form style="display:inline" method="post" action="{{ url_for('delete_user', uid=r.uid) }}" data-confirm="Delete this user and all their data?"><button class="btn sm red">🗑 Delete</button></form></td></tr>
+{% else %}<tr><td colspan="6" class="muted center">No users yet.</td></tr>{% endfor %}
+</tbody></table></div>
+{% endblock %}

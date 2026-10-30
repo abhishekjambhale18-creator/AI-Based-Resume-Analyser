@@ -1,0 +1,4 @@
+{% extends 'base.html' %}{% block title %}Migration Results{% endblock %}
+{% block content %}<h1 style="font-size:1.6rem" class="mb">Migration Results</h1>
+<pre class="mig">{% for s, n in lines %}[{{ s }}]  {{ n }}
+{% endfor %}</pre><p class="mt"><a href="{{ url_for('admin_dashboard') }}">← Back to Dashboard</a></p>{% endblock %}

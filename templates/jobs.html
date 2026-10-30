@@ -1,0 +1,11 @@
+{% extends 'base.html' %}{% block title %}Manage Jobs{% endblock %}
+{% block content %}
+<p class="bc"><a href="{{ url_for('admin_dashboard') }}">Dashboard</a> › Manage Jobs</p>
+<form class="card mb" method="post"><h2>＋ Add New Job</h2>
+<div class="two mt"><input name="title" placeholder="Job Title" required><input name="company" placeholder="Company Name" required></div>
+<textarea name="req" rows="3" placeholder="Job Requirements (comma-separated skills)" required></textarea><button class="btn">Add Job</button></form>
+<div class="card"><h2>💼 Job Listings</h2><div class="tbl-wrap mt"><table><thead><tr><th>Job ID</th><th>Title</th><th>Company</th><th>Requirements</th><th></th></tr></thead><tbody>
+{% for j in rows %}<tr><td><span class="idbox">{{ j.jid }}</span></td><td>{{ j.title }}</td><td>{{ j.company_name }}</td><td>{{ j.req }}</td>
+<td><form method="post" action="{{ url_for('delete_job', jid=j.jid) }}" data-confirm="Delete this job?"><button class="btn sm red">🗑</button></form></td></tr>{% endfor %}
+</tbody></table></div></div>
+{% endblock %}
