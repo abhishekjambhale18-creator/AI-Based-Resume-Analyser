@@ -121,14 +121,15 @@ Database tables and sample jobs are created automatically on first start.
 
 ---
 
-👨‍💻 Author
-Abhishek Jambhale
+### 👨‍💻 Author
+**Abhishek Jambhale**  
+MCA Student | Aspiring Data Analyst & Data Scientist  
+📍 Pune, Maharashtra  
 
-MCA Student | Aspiring Data Analyst & Data Scientist
-
-📍 Pune, Maharashtra
-LinkedIn: abhishek-jambhale
-Email: abhishekjambhale.18@gmail.com
-⭐ Star this repository if you find it useful!
+- LinkedIn: [abhishek-jambhale](https://www.linkedin.com/in/abhishek-jambhale-4a3002442)  
+- Email: abhishekjambhale.18@gmail.com  
 
 ---
+
+⭐ Star this repository if you like the project!
+
